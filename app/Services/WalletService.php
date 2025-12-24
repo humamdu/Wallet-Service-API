@@ -141,6 +141,7 @@ class WalletService
             $first = Wallet::where('id', $firstId)->lockForUpdate()->first();
             $second = Wallet::where('id', $secondId)->lockForUpdate()->first();
 
+            // maps the ordered rows back to the operation roles
             if ($first->id === $source->id) {
                 $src = $first;
                 $tgt = $second;
