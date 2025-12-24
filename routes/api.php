@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Middleware\RequireIdempotencyKey;
 
 
 Route::get('/health', [HealthController::class, 'index']);
@@ -16,8 +18,11 @@ Route::prefix('/wallets')->group(function () {
     Route::get('/{id}/balance', [WalletController::class, 'balance']);
     Route::get('/{id}/transactions', [WalletController::class, 'transactions']);
 
-    Route::post('/{id}/deposit', [App\Http\Controllers\TransactionController::class, 'deposit']);
-    Route::post('/{id}/withdraw', [App\Http\Controllers\TransactionController::class, 'withdraw']);
+    Route::post('/{id}/deposit', [TransactionController::class, 'deposit'])
+                ->middleware(RequireIdempotencyKey::class);
+    Route::post('/{id}/withdraw', [TransactionController::class, 'withdraw'])
+                ->middleware(RequireIdempotencyKey::class);
 });
 
-Route::post('/transfers', [TransferController::class, 'transfer']);
+Route::post('/transfers', [TransferController::class, 'transfer'])
+            ->middleware(RequireIdempotencyKey::class);

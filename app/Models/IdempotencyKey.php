@@ -10,5 +10,5 @@ class IdempotencyKey extends Model
     use HasFactory;
 
     protected $fillable = ['key', 'method', 'path', 'group_id', 'response'];
-    protected $casts = ['response' => 'array'];
+    protected $casts = ['response' => 'array']; // cached response data
 }

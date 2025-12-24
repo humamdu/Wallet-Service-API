@@ -10,9 +10,10 @@ class Wallet extends Model
     use HasFactory;
 
     protected $fillable = ['owner_name', 'currency', 'balance', 'uuid'];
+    public $balanceMajor = '';
 
     protected $casts = [
-        'balance' => 'integer',
+        'balance' => 'integer', //minor units (integers)
     ];
 
     public static function booted()
@@ -23,5 +24,10 @@ class Wallet extends Model
     public function ledgerEntries()
     {
         return $this->hasMany(LedgerEntry::class);
+    }
+
+    public function getBalanceMajor()
+    {
+        $this->balanceMajor = $this->balance / 100;
     }
 }

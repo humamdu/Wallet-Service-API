@@ -51,36 +51,37 @@ class WalletServiceTest extends TestCase
             'currency' => 'USD',
             'balance' => 500, // minor units
         ]);
+        $idempotencyKey = 'idem-withdraw-1';
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Insufficient funds');
 
-        $this->service->withdraw($wallet, 1000);
+        $this->service->withdraw($wallet, 1000, $idempotencyKey);
     }
 
     public function test_transfer_creates_debit_and_credit_and_is_atomic()
     {
-        $src = Wallet::create([
+        $source = Wallet::create([
             'owner_name' => 'Source',
             'currency' => 'USD',
             'balance' => 5000,
         ]);
 
-        $tgt = Wallet::create([
+        $target = Wallet::create([
             'owner_name' => 'Target',
             'currency' => 'USD',
             'balance' => 1000,
         ]);
 
         $idempotencyKey = 'transfer-abc-1';
-        $entries = $this->service->transfer($src, $tgt, 2000, $idempotencyKey);
+        $entries = $this->service->transfer($source, $target, 2000, $idempotencyKey);
 
-        $src->refresh();
-        $tgt->refresh();
+        $source->refresh();
+        $target->refresh();
 
         // balances updated
-        $this->assertEquals(3000, $src->balance);
-        $this->assertEquals(3000, $tgt->balance);
+        $this->assertEquals(3000, $source->balance);
+        $this->assertEquals(3000, $target->balance);
 
         // two ledger entries (debit + credit) with same group_id
         $this->assertCount(2, $entries);
@@ -107,7 +108,9 @@ class WalletServiceTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Cannot transfer to same wallet');
 
-        $this->service->transfer($w, $w, 100, null);
+        $idempotencyKey = "test-transfer-self";
+
+        $this->service->transfer($w, $w, 100, $idempotencyKey);
 
         // currency mismatch
         $a = Wallet::create([
@@ -124,6 +127,7 @@ class WalletServiceTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Currency mismatch');
 
-        $this->service->transfer($a, $b, 100);
+        $idempotencyKey = "test-transfer-missmatch";
+        $this->service->transfer($a, $b, 100, $idempotencyKey);
     }
 }

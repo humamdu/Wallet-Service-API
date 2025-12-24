@@ -1,0 +1,299 @@
+{
+  "info": {
+    "_postman_id": "cfc0e1ec-fcfa-4bf9-9266-82116087559c",
+    "name": "wallet api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "wallet",
+      "item": [
+        {
+          "name": "list of wallets",
+          "id": "80cdb395-31ca-4ccf-90c6-0048f47a5421",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "wallet",
+          "id": "ddd85ab7-f373-461d-8ac8-aa3c3d3d49d3",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "transactions",
+          "id": "503fc586-c643-4f26-8c19-0c1cc21c1b56",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/1/transactions",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                "1",
+                "transactions"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "a1642985-ba47-4a1e-b3e4-5475ccc1c7ec",
+              "name": "filter type",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseURL}}/api/wallets/1/transactions?type=deposit",
+                  "host": [
+                    "{{baseURL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "wallets",
+                    "1",
+                    "transactions"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "deposit",
+                      "description": "deposit, withdrawal, transfer_debit, transfer_credit"
+                    }
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "deposit",
+          "id": "5eb0a21f-0219-4744-badc-18d856c28396",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "test-dep1",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"amount\": \"10\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/1/deposit",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                "1",
+                "deposit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "withdraw",
+          "id": "ab7c42ac-74a2-49b4-9f54-ed965c86b2d8",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "tw2",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"amount\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/1/withdraw",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                "1",
+                "withdraw"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "balance",
+          "id": "9ae06621-0984-47c4-b45d-379c94a4e50e",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/1/balance",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                "1",
+                "balance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add wallet",
+          "id": "5f49007a-68de-4896-88a8-76d8c305ac3c",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"owner_name\": \"A\",\r\n    \"currency\": \"usd\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/wallets/",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "wallets",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "be3e5578-ebf6-49cd-9c54-15cc752e155e"
+    },
+    {
+      "name": "health",
+      "id": "a8242cbe-5742-4fbd-8275-3925797b54ab",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseURL}}/api/health/",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "api",
+            "health",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "transfers",
+      "id": "ab98d4be-7276-4132-9baa-e48d75854d48",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Idempotency-Key",
+            "value": "tr-3",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"source_wallet_id\": 1,\r\n    \"target_wallet_id\": 2,\r\n    \"amount\": \"320\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/api/transfers",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "api",
+            "transfers"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "id": "7cfcc849-3bad-462e-a4a9-c2a85a835e71",
+      "key": "baseURL",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

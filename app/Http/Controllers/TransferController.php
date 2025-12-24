@@ -20,19 +20,21 @@ class TransferController extends Controller
     {
         $source = Wallet::findOrFail($request->input('source_wallet_id'));
         $target = Wallet::findOrFail($request->input('target_wallet_id'));
-        $amount = $this->toMinorUnits($request->input('amount'));
+        $amount = $this->service->toMinorUnits($request->input('amount'));
         $idempotencyKey = $request->header('Idempotency-Key');
 
-        $entries = $this->service->transfer($source, $target, $amount, $idempotencyKey);
+        try {
+
+            $entries = $this->service->transfer($source, $target, $amount, $idempotencyKey);
+
+        } catch (\Throwable $th) {
+
+            return response()->json(['error' => $th->getMessage()], 422);
+            
+        }
+
 
         return response()->json(['transactions' => $entries->toArray()], 201);
     }
 
-    protected function toMinorUnits($value): int
-    {
-        if (is_numeric($value)) {
-            return (int)round(floatval($value) * 100);
-        }
-        throw new \InvalidArgumentException('Invalid amount format');
-    }
 }

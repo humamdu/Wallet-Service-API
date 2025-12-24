@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class WalletService
 {
     // amountMinor: integer (minor units)
-    public function deposit(Wallet $wallet, int $amountMinor, ?string $idempotencyKey = null)
+    public function deposit(Wallet $wallet, int $amountMinor, string $idempotencyKey)
     {
         if ($amountMinor <= 0) {
             throw new \InvalidArgumentException('Amount must be greater than zero');
@@ -58,7 +58,7 @@ class WalletService
         });
     }
 
-    public function withdraw(Wallet $wallet, int $amountMinor, ?string $idempotencyKey = null)
+    public function withdraw(Wallet $wallet, int $amountMinor, string $idempotencyKey)
     {
         if ($amountMinor <= 0) {
             throw new \InvalidArgumentException('Amount must be greater than zero');
@@ -109,7 +109,7 @@ class WalletService
     }
 
     // transfer between wallets atomically
-    public function transfer(Wallet $source, Wallet $target, int $amountMinor, ?string $idempotencyKey = null)
+    public function transfer(Wallet $source, Wallet $target, int $amountMinor, string $idempotencyKey)
     {
         if ($amountMinor <= 0) {
             throw new \InvalidArgumentException('Amount must be greater than zero');
@@ -141,6 +141,7 @@ class WalletService
             $first = Wallet::where('id', $firstId)->lockForUpdate()->first();
             $second = Wallet::where('id', $secondId)->lockForUpdate()->first();
 
+            // maps the ordered rows back to the operation roles
             $src = $first->id === $source->id ? $first : $second;
             $tgt = $src->id === $source->id ? $second : $first;
 
@@ -186,5 +187,13 @@ class WalletService
 
             return collect([$debit, $credit]);
         });
+    }
+
+    public function toMinorUnits($value): int
+    {
+        if (is_numeric($value)) {
+            return (int)round(floatval($value) * 100);
+        }
+        throw new \InvalidArgumentException('Invalid amount format');
     }
 }

@@ -21,7 +21,7 @@ class WalletController extends Controller
             $query->where('currency', strtoupper($currency));
         }
 
-        $wallets = $query->paginate(20);
+        $wallets = $query->paginate(10);
 
         return response()->json($wallets);
     }
@@ -39,35 +39,50 @@ class WalletController extends Controller
 
     public function show($id)
     {
-        $wallet = Wallet::findOrFail($id);
+        try {
+            $wallet = Wallet::findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Wallet not found'], 404);
+        }
+
         return response()->json($wallet);
     }
 
     public function balance($id)
     {
-        $wallet = Wallet::findOrFail($id);
-        return response()->json(['balance' => $wallet->balance, 'currency' => $wallet->currency]);
+        try {
+            $wallet = Wallet::findOrFail($id);
+            return response()->json(['balance' => $wallet->balance, 'currency' => $wallet->currency]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Wallet not found'], 404);
+        }
     }
 
     public function transactions(Request $request, $id)
     {
-        $wallet = Wallet::findOrFail($id);
+        try {
+            $wallet = Wallet::findOrFail($id);
+    
+            $query = $wallet->ledgerEntries()->orderBy('created_at', 'desc');
+    
+            if ($type = $request->query('type')) {
+                $query->where('type', $type);
+            }
+            if ($from = $request->query('from')) {
+                $query->where('created_at', '>=', $from);
+            }
+            if ($to = $request->query('to')) {
+                $query->where('created_at', '<=', $to);
+            }
+    
+            $perPage = min(100, (int) $request->query('per_page', 10));
+            $tx = $query->paginate($perPage);
+    
+            return response()->json($tx);
 
-        $query = $wallet->ledgerEntries()->orderBy('created_at', 'desc');
-
-        if ($type = $request->query('type')) {
-            $query->where('type', $type);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Wallet not found'], 404);
         }
-        if ($from = $request->query('from')) {
-            $query->where('created_at', '>=', $from);
-        }
-        if ($to = $request->query('to')) {
-            $query->where('created_at', '<=', $to);
-        }
-
-        $perPage = min(100, (int) $request->query('per_page', 20));
-        $tx = $query->paginate($perPage);
-
-        return response()->json($tx);
     }
 }
