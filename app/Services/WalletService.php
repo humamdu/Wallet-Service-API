@@ -141,9 +141,13 @@ class WalletService
             $first = Wallet::where('id', $firstId)->lockForUpdate()->first();
             $second = Wallet::where('id', $secondId)->lockForUpdate()->first();
 
-            // maps the ordered rows back to the operation roles
-            $src = $first->id === $source->id ? $first : $second;
-            $tgt = $src->id === $source->id ? $second : $first;
+            if ($first->id === $source->id) {
+                $src = $first;
+                $tgt = $second;
+            } else {
+                $src = $second;
+                $tgt = $first;
+            }
 
             if ($src->balance < $amountMinor) {
                 throw new \RuntimeException('Insufficient funds in source wallet');
