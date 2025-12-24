@@ -35,7 +35,15 @@ class TransactionController extends Controller
         $amount = $this->toMinorUnits($request->input('amount'));
         $idempotencyKey = $request->header('Idempotency-Key');
 
-        $entries = $this->service->withdraw($wallet, $amount, $idempotencyKey);
+        try {
+
+            $entries = $this->service->withdraw($wallet, $amount, $idempotencyKey);
+
+        } catch (\Throwable $th) {
+
+            return response()->json(['error' => $th->getMessage()], 422);
+            
+        }
 
         return response()->json(['transactions' => $entries->toArray()], 201);
     }
